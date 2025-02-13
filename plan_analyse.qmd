@@ -1,0 +1,90 @@
+---
+subtitle: "Plan d'analyse statistique"
+lot: false
+lof: false
+---
+
+```{r info}
+rm(list=ls())
+library("baseph")
+library("tidyverse")
+# sessionInfo()
+```
+
+# Généralités
+
+Le risque $\alpha$ retenu sera de 0,05 & la puissance de 0,8.
+
+Vu le faible nombre de cas on ne fera pas d'hypothèse de normalité. Les variables numériques (notation) seront présentées par leur médiane avec les quartiles & comparées grâce au test non paramétrique de Wilcoxon. Les variables discrètes seront présentés en nombre avec le pourcentage. Le test du $\chi^2$ de Spearman sera utilisé sous réserve d'un effectif suffisant, à défaut le test exact de Fischer. Des graphiques seront réalisés pour les résultats importants (package `ggplot2` [@ggplot]).
+
+
+
+## Taille de l'échantillon
+
+Le critère principal est la comparaison des photos obtenues pour plusieurs couples distance/focale (abrégé en *focale* pour la suite du document).
+
+On obtient une note de 1 à 5 pour chaque photo, donnée par chaque membre du jury soit trois experts & trois profanes. La note ira donc de 3 à 15 ou de 6 à 30 selon le panel étudié. 
+
+Il est difficile d'estimer le nb de sujets nécessaire en ignorant complètement les différences qui vont être observées entre les focales & les différences inter observateurs. 
+
+En utilisant un test de Kruskal-Wallis Rank Sum Test (qui évite de faire une hypothèse de normalité) avec cinq échantillons aléatoires suivants une loi normale & une variance égale à l’écart entre le meilleur & le pire résultat, un échantillon de 40 à 50 cas semble correct. Il s'agit là d'un calcul très théorique.
+
+```{r}
+tz <- NULL
+for(i in 1:100){
+nn <- 100
+vv <- 2
+a <- rnorm(nn, 0,vv) + 1
+b <- rnorm(nn, 0,vv)  + 1.5
+c <- rnorm(nn, 0,vv)  +1
+d <- rnorm(nn, 0,vv)  + 0.5
+e <- rnorm(nn, 0,vv)  
+summary(lm(a~b+c+d+e))
+zz <- kruskal.test(list(a,b,c,d,e))
+zp <- zz$p.value
+tz <- c(tz,zp)
+}
+ctz <- cut(tz,c(0,0.05,2))
+summary(ctz)
+```
+
+
+## Données manquantes
+
+Le décompte des données manquantes sera réalisé & présenté par un tableau ou un graphique. Les variables comportant trop de données manquantes ou non utilisables ne seront pas prises en compte après validation par le promoteur.
+
+Après ce premier tri une imputation des données manquantes (package `missMDA` [@miss]) sera réalisée uniquement pour l'analyse factorielle & pour la recherche du meilleur modèle par step-by-tep descendant pour les analyses par régression (logistique ou linéaire). Néanmoins pour cette analyse, après choix du modèle, le calcul final sera fait avec les données réelles. 
+
+# Description de la population
+
+## Analyse simple
+
+
+Une analyse de corrélation (package `corr` [@corr]) entre les variables sera réalisée & présentée sur un graphique de corrélation. Si certaines variables se montrent anormalement corrélées elles devront être exclues de l'étude après accord du promoteur.
+
+Un tableau présentera les résultats du questionnaire *médecin*.
+
+## Analyse factorielle
+
+Si le nombre de cas recueillis le permet une analyse factorielle en MCA (Analyse de correspondances multiples -- package `FactoMineR` [@facto]) sera réalisée.
+
+Cette analyse ne pourra être réalisée qu'après transformation des variables numériques en catégories & imputation des données manquantes ce qui n'est possible que si ces dernières ne sont pas trop nombreuses.
+
+# Objectif principal
+
+
+Une analyse simple sera réalisée pour rechercher d'éventuels facteurs pronostics en utilisant les données médicales (terme, poids à la naissance\dots)
+
+
+## Analyse par régression
+
+Un modèle de régression logistique multinomiale sera employé (package `VGAM` [@vgam]). Ce modèle de régression permettra d’explorer les facteurs associés à la réponse en utilisant les critères ayant une réponse significative avec un seuil de la p.value \< 0,2 lors de l'étape précédente. Une recherche du meilleur modèle sera réalisée par un step-by-step descendant évaluée par le critère d’information d’Akaike. Cette étape sera réalisée après imputation des données manquantes mais le résultat final sera calculé sur les données vraies. 
+
+
+# Technique {.appendix}
+
+L'analyse statistique sera réalisée avec le logiciel **R**[@rstat] & divers packages. Outre ceux cités dans le texte ou utilisera en particulier `tidyverse` [@tidy] & `baseph` [@baseph].
+
+Un dépôt GitHub sera utilisé qui ne comprendra que le code & non les données ou résultats. Au besoin un faux tableau de données sera présenté pour permettre des tests.
+
+<https://github.com/philippemichel/FACE-Q>
