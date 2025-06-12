@@ -3,7 +3,7 @@
 
 <!-- badges: start -->
 
-![Static badge](https://img.shields.io/badge/PAS-en_cours-orange)
+![Static badge](https://img.shields.io/badge/PAS-en_cours-green)
 
 ![Static badge](https://img.shields.io/badge/rapport-attente-red)
 
@@ -17,7 +17,7 @@
 Enquête sur plusieurs établissements
 
 
-**13/02/2025** Plan d'analyse des données v0.1
+**12/062025** Plan d'analyse des données v2.0
 
 ## Fichiers
 

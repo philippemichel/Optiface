@@ -1,5 +1,5 @@
 ---
-subtitle: "Plan d'analyse statistique"
+subtitle: "Plan d'analyse statistique V2.0"
 lot: false
 lof: false
 ---
@@ -15,7 +15,7 @@ library("tidyverse")
 
 Le \gls{alpha} retenu sera de 0,05 & la \gls{puissance} de 0,8.
 
-Vu le faible nombre de cas on ne fera pas d'hypothèse de normalité. Les variables numériques (notation) seront présentées par leur médiane avec les quartiles & comparées grâce au test non paramétrique de Wilcoxon. Les variables discrètes seront présentés en nombre avec le pourcentage. Le test du $\chi^2$ de Spearman sera utilisé sous réserve d'un effectif suffisant, à défaut le test exact de Fischer. Des graphiques seront réalisés pour les résultats importants (package `ggplot2` [@ggplot]).
+Vu le faible nombre de cas on ne fera pas d'hypothèse de normalité. Les variables numériques (notation) seront présentées par leur médiane avec les quartiles & comparées grâce au test non paramétrique de \textsc{Wilcoxon}. Les variables discrètes seront présentés en nombre avec le pourcentage. Le test du $\chi^2$ de \textsc{Spearman} sera utilisé sous réserve d'un effectif suffisant, à défaut le test exact de \textsc{Fischer}. Des graphiques seront réalisés pour les résultats importants (package `ggplot2` [@ggplot]).
 
 
 
@@ -25,9 +25,9 @@ Le critère principal est la comparaison des photos obtenues pour plusieurs coup
 
 On obtient une note de 1 à 5 pour chaque photo, donnée par chaque membre du jury soit trois experts & trois profanes. La note ira donc de 3 à 15 ou de 6 à 30 selon le panel étudié. 
 
-Il est difficile d'estimer le nb de sujets nécessaire en ignorant complètement les différences qui vont être observées entre les focales & les différences inter observateurs. 
+Il est difficile d'estimer le nombre de sujets nécessaire en ignorant complètement les différences qui vont être observées entre les focales & les différences inter observateurs. 
 
-En utilisant un test de \gls{kruskal-wallis} Rank Sum Test (qui évite de faire une hypothèse de normalité) avec cinq échantillons aléatoires suivants une loi normale & une variance égale à l’écart entre le meilleur & le pire résultat, un échantillon de 50 à 60 cas semble correct. Il s'agit là d'un calcul très théorique.
+En utilisant un test de \gls{kruskal} Rank Sum Test (qui évite de faire une hypothèse de normalité) avec cinq échantillons aléatoires suivants une loi normale & une variance égale à l’écart entre le meilleur & le pire résultat, un échantillon de 50 à 60 cas semble correct. Il s'agit là d'un calcul très théorique.
 
 ```{r}
 #| eval: false
@@ -55,27 +55,34 @@ summary(ctz)
 
 Le décompte des données manquantes sera réalisé & présenté par un tableau ou un graphique. Les variables comportant trop de données manquantes ou non utilisables ne seront pas prises en compte après validation par le promoteur.
 
-Après ce premier tri une imputation des données manquantes (package `missMDA` [@miss]) sera réalisée uniquement pour l'analyse factorielle & pour la recherche du meilleur modèle par step-by-tep descendant pour les analyses par régression (logistique ou linéaire). Néanmoins pour cette analyse, après choix du modèle, le calcul final sera fait avec les données réelles. 
+Après ce premier tri une imputation des données manquantes (package `missMDA` [@miss]) sera réalisée uniquement pour la recherche du meilleur modèle par step-by-tep descendant pour les analyses par régression (logistique ou linéaire). Néanmoins pour cette analyse, après choix du modèle, le calcul final sera fait avec les données réelles. 
 
 ### Corrélations anormales
 
-Une analyse de corrélation (package `corr` [@corr]) entre les variables sera réalisée & présentée sur un graphique de corrélation. Si certaines variables se montrent anormalement corrélées elles devront être exclues de l'étude après accord du promoteur.
+Une analyse de corrélation (package `corr` [@corr]) entre les variables sera réalisée & présentée sur un graphique de corrélation. Si certaines variables se montrent anormalement corrélées elles pourront être exclues de l'étude après accord du promoteur.
 
 ## Description de la population
 
-Un tableau présentant les données démographiques de la population sera présenté
+Un tableau descriptif présentant les données démographiques de la population sera présenté.
 
 # Objectif principal
 
-*Score d’attractivité de 1 à 5 (respectivement de très peu esthétique à très esthétique). Les images seront évaluées par 4 évaluateurs indépendants (2 experts : chirurgien de la face et 2 non-experts) en fonction de la focale utilisée : 50 mm, 85mm, 105mm, 135mm et 200mm. Les participants seront classés selon le Phototype Fitzpatrick : un groupe I-II, un groupe III-IV et un groupe V-V*
+*Score d’attractivité de 1 à 5 (respectivement de très peu esthétique à très esthétique). Les images seront évaluées par 4 évaluateurs indépendants (2 experts : chirurgien de la face et 2 non-experts) en fonction de la focale utilisée : 50 mm, 85mm, 105mm, 135mm et 200mm. Les participants seront classés selon le Phototype \textsc{Fitzpatrick} : un groupe I-II, un groupe III-IV et un groupe V-V*
 
-On vérifiera tout d'abord la concordance des évaluations des experts par un test de Kappa-Cohen (package `psych` [@psych]).
+## Fiabilité inter-évaluateurs
 
-Le critère de tri est une classification en cinq groupes (1 à 5) qui seront considérés comme des notes (données numériques). Les résultats seront tout d'abord étudiés globalement par une comparaison des moyennes des notes obtenues par les différentes focales (test de \gls{kruskal-wallis}). Si le test est significatif, une \gls{analyse post-hoc} sera réalisée pour identifier des différences éventuelles entre les groupes de focales pris deux à deux (test de \gls{tukey} -- packages `emmeans` [@emmeans]).
+On vérifiera tout d'abord la concordance des évaluations des experts par un test de \gls{fkappa} (package `irr` [@psych]).
 
-On recherchera ensuite un à un les critères pouvant influer sur ce résultat c'est à dire le phototype de Fitzpatrick et de la qualité des évaluateurs (experts vs non-expert) par des analyses en régression linéaire. Si un test est significatif, une a\gls{analyse post-hoc} sera réalisée pour identifier des différences éventuelles entre les groupes de focales pris deux à deux (test de v\gls{tukey} -- packages `emmeans` [@emmeans]). On présentera ensuite l'influence éventuelle d'autres facteurs (sexe, âge\dots) qui pourraient influer sur le résultat.  
+La concordance des mesures entre les évaluateurs sera étudiée en \gls{icc} -- Fiabilité inter-évaluateurs (package `irr` [@irr]). On étudiera la concordance globale entre les quatre évaluateurs & la concordance entre les experts & les non-experts.
 
-Une analyse globale en régression linéaire reprenant tous ces critères à savoir la qualité de l"évaluateur le phototype de Fitzpatrick  & les les critères autre ayant une réponse significative avec un seuil de la p.value \< 0,2 lors de l'étape précédente. Une recherche du meilleur modèle sera réalisée par un step-by-step descendant évaluée par le critère d’information d’Akaike. Cette étape sera réalisée après imputation des données manquantes. Une \gls{analyse post-hoc} sera réalisées par la procédure décrite plus haut si nécessaire.
+## Analyse des réusltats selon la focale
+
+Le critère de tri est une classification en cinq groupes (1 à 5) qui seront considérés comme des notes (données numériques). Les résultats seront tout d'abord étudiés globalement par une comparaison des moyennes des notes obtenues par les différentes focales (test de \gls{kruskal}). Si le test est significatif, une \gls{analyse post-hoc} sera réalisée pour identifier des différences éventuelles entre les groupes de focales pris deux à deux (test de \gls{tukey} -- packages `emmeans` [@emmeans]).
+
+On étudiera ensuite un à un les critères principaux pouvant influer sur ce résultat c'est à dire le phototype de \textsc{Fitzpatrick} & de la qualité des évaluateurs (expert vs non-expert) par des analyses en régression linéaire. Si un test est significatif, une \gls{analyse post-hoc} sera réalisée pour identifier des différences éventuelles entre les groupes de focale pris deux à deux (test de v\gls{tukey} -- packages `emmeans` [@emmeans]). On présentera ensuite l'influence éventuelle d'autres facteurs (sexe, âge\dots) qui pourraient influer sur le résultat.  
+
+Une analyse globale en régression linéaire reprenant tous ces critères à savoir la qualité de l"évaluateur le phototype de \textsc{Fitzpatrick}  & pour les critères autre ceux ayant une réponse significative avec un seuil de la p.value \< 0,2 lors de l'étape précédente. Une recherche du meilleur modèle sera réalisée par un step-by-step descendant évaluée par le critère d’information d’Akaike. Cette étape sera réalisée après imputation des données manquantes. Une \gls{analyse post-hoc} sera réalisées par la procédure décrite plus haut si nécessaire.
+
 
 
 # Technique {.appendix}
