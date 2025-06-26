@@ -36,7 +36,7 @@ lof: true
 lot: true
 fig-cap-location: bottom
 tbl-cap-location: top
-classoption: [french]
+classoption: [french, bibtotoc]
 papersize: a4
 editor: source
 bibliography: stat.bib

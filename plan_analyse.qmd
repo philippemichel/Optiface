@@ -1,5 +1,5 @@
 ---
-subtitle: "Plan d'analyse statistique V2.0"
+subtitle: "Plan d'analyse statistique V2.2"
 lot: false
 lof: false
 ---
@@ -13,7 +13,7 @@ library("tidyverse")
 
 # Généralités
 
-Le \gls{alpha} retenu sera de 0,05 & la \gls{puissance} de 0,8.
+Le \gls{alpha} retenu sera de \num{0.05} & la \gls{puissance} de \num{0.8}.
 
 Vu le faible nombre de cas on ne fera pas d'hypothèse de normalité. Les variables numériques (notation) seront présentées par leur médiane avec les quartiles & comparées grâce au test non paramétrique de \textsc{Wilcoxon}. Les variables discrètes seront présentés en nombre avec le pourcentage. Le test du $\chi^2$ de \textsc{Spearman} sera utilisé sous réserve d'un effectif suffisant, à défaut le test exact de \textsc{Fischer}. Des graphiques seront réalisés pour les résultats importants (package `ggplot2` [@ggplot]).
 
@@ -23,7 +23,7 @@ Vu le faible nombre de cas on ne fera pas d'hypothèse de normalité. Les variab
 
 Le critère principal est la comparaison des photos obtenues pour plusieurs couples distance/focale (abrégé en *focale* pour la suite du document).
 
-On obtient une note de 1 à 5 pour chaque photo, donnée par chaque membre du jury soit trois experts & trois profanes. La note ira donc de 3 à 15 ou de 6 à 30 selon le panel étudié. 
+Les images seront classées de 1 à 5 par chaque membre du jury soit deux experts & deux profanes. La note ira donc de 4 à 20. 
 
 Il est difficile d'estimer le nombre de sujets nécessaire en ignorant complètement les différences qui vont être observées entre les focales & les différences inter observateurs. 
 
@@ -67,7 +67,7 @@ Un tableau descriptif présentant les données démographiques de la population 
 
 # Objectif principal
 
-*Score d’attractivité de 1 à 5 (respectivement de très peu esthétique à très esthétique). Les images seront évaluées par 4 évaluateurs indépendants (2 experts : chirurgien de la face et 2 non-experts) en fonction de la focale utilisée : 50 mm, 85mm, 105mm, 135mm et 200mm. Les participants seront classés selon le Phototype \textsc{Fitzpatrick} : un groupe I-II, un groupe III-IV et un groupe V-V*
+*Score d’attractivité de 1 à 5 (respectivement de très peu esthétique à très esthétique). Les images seront évaluées par quatre évaluateurs indépendants (deux experts : chirurgien de la face et deux non-experts) en fonction de la focale utilisée : \qtylist{85; 105; 135; 200}{\mm}. Les participants seront classés selon le Phototype \textsc{Fitzpatrick} : un groupe `I-II`, un groupe `III-IV` et un groupe `V-VI`.*
 
 ## Fiabilité inter-évaluateurs
 
@@ -77,11 +77,25 @@ La concordance des mesures entre les évaluateurs sera étudiée en \gls{icc} --
 
 ## Analyse des réusltats selon la focale
 
-Le critère de tri est une classification en cinq groupes (1 à 5) qui seront considérés comme des notes (données numériques). Les résultats seront tout d'abord étudiés globalement par une comparaison des moyennes des notes obtenues par les différentes focales (test de \gls{kruskal}). Si le test est significatif, une \gls{analyse post-hoc} sera réalisée pour identifier des différences éventuelles entre les groupes de focales pris deux à deux (test de \gls{tukey} -- packages `emmeans` [@emmeans]).
+Pour chaque sujet les quatre photos correspondant aux quatre focales sont classées de 1 à 5. Le critère de jugement est la somme des notes des quatre juges soit une note variant de 4 à 20. Les résultats seront tout d'abord étudiés globalement par une comparaison des moyennes des notes obtenues par les différentes focales (test de \gls{kruskal}). Si le test est significatif, une \gls{analyse post-hoc} sera réalisée pour identifier des différences éventuelles entre les groupes de focales pris deux à deux (test de \gls{tukey} -- packages `emmeans` [@emmeans]).
 
 On étudiera ensuite un à un les critères principaux pouvant influer sur ce résultat c'est à dire le phototype de \textsc{Fitzpatrick} & de la qualité des évaluateurs (expert vs non-expert) par des analyses en régression linéaire. Si un test est significatif, une \gls{analyse post-hoc} sera réalisée pour identifier des différences éventuelles entre les groupes de focale pris deux à deux (test de v\gls{tukey} -- packages `emmeans` [@emmeans]). On présentera ensuite l'influence éventuelle d'autres facteurs (sexe, âge\dots) qui pourraient influer sur le résultat.  
 
-Une analyse globale en régression linéaire reprenant tous ces critères à savoir la qualité de l"évaluateur le phototype de \textsc{Fitzpatrick}  & pour les critères autre ceux ayant une réponse significative avec un seuil de la p.value \< 0,2 lors de l'étape précédente. Une recherche du meilleur modèle sera réalisée par un step-by-step descendant évaluée par le critère d’information d’Akaike. Cette étape sera réalisée après imputation des données manquantes. Une \gls{analyse post-hoc} sera réalisées par la procédure décrite plus haut si nécessaire.
+Une analyse globale en régression linéaire reprenant tous ces critères à savoir la qualité de l"évaluateur le phototype de \textsc{Fitzpatrick}  & pour les critères autre ceux ayant une réponse significative avec un seuil de la p.value \< \num{0.2} lors de l'étape précédente. Une recherche du meilleur modèle sera réalisée par un step-by-step descendant évaluée par le critère d’information d’\textsc{Akaike}. Cette étape sera réalisée après imputation des données manquantes. Une \gls{analyse post-hoc} sera réalisées par la procédure décrite plus haut si nécessaire.
+
+## Modéle mixte
+
+On étudiera en particulier la note reçue  en fonction de la focale utilisée  par un modèle mixte (packages `lme4` [@lme4] & `lmerTest` [@lmert]) avec comme variable aléatoire le sujet. Ce modèle pourra être éventuellement affiné en incluant des facteur confondants mis en évidence par les étapes précédentes sans dépasser trois facteurs vu la taille de l'échantillon.
+
+```{r}
+#| label: mod_mixte
+#| eval: false
+#| echo: true
+
+library(lmerTest)
+mmod <- lmerTest::lmer(note ~ focale + (1 | sujet), data = optiface)
+summary(mmod)
+```
 
 
 
